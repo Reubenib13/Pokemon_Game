@@ -16,7 +16,10 @@ TYPES = ["EARTH", "WATER", "FIRE", "GRASS", "EARTH"]
 def find_pokemon(name, primary_type, health, level):
     print("\n Congratulations you found a {name}")
     nickname = input("What would youlike to nickname it: ")
-    while nickname == [x.nickname for x in TYPES]:
+    nicknames = []
+    for i in pokemon:
+        nicknames.append(i.nickname)
+    while nickname in nicknames:
         print("Nickname taken")
         nickname = input("What would you like to nickname your {name}: ")
 
@@ -85,3 +88,7 @@ while True:
         "\nEnter action: ", ['v', 'e', 't'], "Enter (V / E / T) only")
     if action_choice == 'v':
         view_pokemon(pokemon)
+    elif action_choice == 'e':
+        pass
+    elif action_choice == 't':
+        pass
