@@ -10,11 +10,11 @@ class Pokemon:
         self.health = health
         self.level = level
         self.exp = exp
-  
+
 
 TYPES = {"EARTH": "WATER", "WATER": "FIRE", "FIRE": "GRASS", "GRASS": "EARTH"}
 AREA_TO_TYPE = {"MOUNTAIN": "EARTH", "OCEAN": "WATER",
-                "DESERT": "FIRE", "FOREST": "GRASS"}
+                 "DESERT": "FIRE", "FOREST": "GRASS"}
 TYPE_TO_ATTACK = {"FIRE": "Fire-Breath", "EARTH": "Rock-Smash",
                   "WATER": "Water-Squirt", "GRASS": "Leaf-Slice"}
 POKEMON = {"MOUNTAIN": ["Geodude", "Sandshrew", "Sandslash", "Diglet"],
@@ -47,6 +47,24 @@ def validate_int_input(string, accepted, fail_message):
         else:
             print(fail_message)
     return input_
+
+
+def start():
+    print("----------------- POKEMON -----------------")
+    print("--------- A rip-off by ReubenIB13 ---------")
+    print("\nYou awake in a town, dazzeled, a bright sun beating down above your head.")
+    print("Getting your bearings you see around you, a forest, a mountain, an ocean and a desert.")
+    print("Choose a dirction to go")
+    print("North - A forest (N)")
+    print("East - A mountain (E)")
+    print("South - A ocean (S)")
+    print("West - An desert (W)")
+    direction_choice = validate_string_input(
+        "\nEnter direction: ", ['n', 'e', 's', 'w'], "Enter (N / E / S / W) only!")
+    area = {'n': "FOREST", 'e': "MOUNTAIN", 's': "OCEAN", 'w': "DESERT"}[direction_choice]
+    pokemon = []
+    pokemon = first_pokemon(area, pokemon)
+    return area, pokemon
 
 
 def heal(pokemon, pokemon_choice):
@@ -113,15 +131,16 @@ def poke_hospital(pokemon):
                 accepted.append(i+1)
             pokemon_choice = validate_int_input(
                 "\nEnter the number of the pokemon you wish to revive: ", accepted, f"Enter only the number of one of your pokemon") - 1
-            if pokemon(pokemon_choice).health <= 0:
-                pokemon(pokemon_choice).health == 10
+            if pokemon[pokemon_choice].health <= 0:
+                pokemon[pokemon_choice].health = 10
                 print(
-                    f"Pokemon {pokemon(pokemon_choice).nickname} is now on 10 health")
+                    f"Pokemon {pokemon[pokemon_choice].nickname} is now on 10 health")
             else:
                 print(
-                    f"{pokemon(pokemon_choice).nickname} still has health so cannot be revived")
+                    f"{pokemon[pokemon_choice].nickname} still has health so cannot be revived")
         elif action == 'q':
             break
+
     return pokemon
 
 
@@ -135,19 +154,19 @@ def chest(inventory, keys_found, chest_increment):
         contents.append("Poke-Ball")
         inventory["pokeballs"] += 1
 
-    if keys_found["DESERT"] == False and random.randint(0, 20) == 0:
+    if keys_found["DESERT"] == False and random.randint(0, 5) == 0:
         contents.append("Desert key")
         keys_found["DESERT"] = True
 
-    if keys_found["MOUNTAIN"] == False and random.randint(0, 20) == 0:
+    if keys_found["MOUNTAIN"] == False and random.randint(0, 5) == 0:
         contents.append("Mountain key")
         keys_found["MOUNTAIN"] = True
 
-    if keys_found["FOREST"] == False and random.randint(0, 20) == 0:
+    if keys_found["FOREST"] == False and random.randint(0, 5) == 0:
         contents.append("Forest key")
         keys_found["FOREST"] = True
 
-    if keys_found["OCEAN"] == False and random.randint(0, 20) == 0:
+    if keys_found["OCEAN"] == False and random.randint(0, 5) == 0:
         contents.append("Ocean key")
         keys_found["OCEAN"] = True
 
@@ -167,6 +186,8 @@ def check_evolve(pokemon_choice, pokemon):
     print(
         f"\n{pokemon[pokemon_choice].nickname} has evolved to level {pokemon[pokemon_choice].level}")
     print("Xp has been reset and health restored to full")
+
+    return pokemon
 
 
 def fight(pokemon_choice, encounter, pokemon, inventory, catch):
@@ -217,16 +238,64 @@ def fight(pokemon_choice, encounter, pokemon, inventory, catch):
         if action == 'y':
             if len(pokemon) > 4:
                 print("Cannot catch as you have a full team")
-                print(
-                    "Remove a pokemon from the view pokemon menu to try and catch next time")
+                action = validate_string_input("Would you like to release a pokemon (Y / N): ", ['y', 'n'], "Enter(Y / N) only!")
+                if action == 'y':
+                    print("\nPokemon:")
+                    for i, v in enumerate(pokemon):
+                        print(f"{i + 1}: {v.nickname}")
+                    accepted = []
+                    for i in range(len(pokemon)):
+                        accepted.append(i+1)
+                    pokemon_choice = validate_int_input(
+                        "Enter the number of the pokemon you wish to release: ", accepted, f"Enter only the number of one of your pokemon") - 1
+                    pokemon.pop(pokemon_choice)
             elif random.randint(0, 1) == 0:
                 print("Success")
+                inventory["pokeballs"] -= 1
                 pokemon = find_pokemon(
                     encounter.name, encounter.type, 50, encounter.level, 0, pokemon)
             else:
                 print(f"{encounter.name} escaped\nTry again next time")
 
     return pokemon, inventory
+
+
+def boss(area, pokemon, boss_beat):
+    inventory = None
+    boss_beat[area] = True
+    print(f"You have encountered the {area} Boss!")
+    for i in range(4):
+        total = 0
+        for j in pokemon:
+            total += j.health
+        if total < 1:
+            print("All pokemon have fainted go to Poke-Hosipital")
+            boss_beat[area] = False
+            break
+
+        else:
+            encounter = Pokemon(POKEMON[area][i], POKEMON[area][i], AREA_TO_TYPE[area], 50, i + 2, 0)
+            print(f"The {area} Boss used they're {encounter.name}")
+            print("\nPokemon:")
+            for i, v in enumerate(pokemon):
+                print(f"{i + 1}: {v.nickname}")
+            accepted = []
+            for i in range(len(pokemon)):
+                accepted.append(i+1)
+            pokemon_choice = validate_int_input(
+                    "Enter the number of the pokemon you wish to fight: ", accepted, f"Enter only the number of one of your pokemon") - 1
+            while pokemon[pokemon_choice].health < 1:
+                print("That pokemon has fainted choose another")
+                pokemon_choice = validate_int_input(
+                    "Enter the number of the pokemon you wish to fight: ", accepted, f"Enter only the number of one of your pokemon") - 1
+            pokemon, inventory = fight(pokemon_choice, encounter, pokemon, inventory, False)
+    if boss_beat[area] == True:
+        print(f"Congratulations you beat the boss\nYou can now enter the DEEP {area}")
+    return pokemon, boss_beat
+
+
+def end_boss(pokemon):
+    return pokemon, won ####################### HERE
 
 
 def view_pokemon(pokemon, inventory):
@@ -288,19 +357,38 @@ def view_pokemon(pokemon, inventory):
     return pokemon, inventory
 
 
-def explore(area, pokemon, inventory, keys_found):
+def explore(area, pokemon, inventory, keys_found, final_boss):
+    won = False
     if area == "TOWN":
-        while True:
-            print("There is the Poke-Hospital")
-            print("\nYou can")
-            print("Enter Poke-Hospital - (E)")
-            print("Quit exploring - (Q)")
-            action = validate_string_input(
-                "Enter action: ", ['e', 'q'], "Enter (E / Q) only!")
-            if action == 'e':
-                pokemon = poke_hospital(pokemon)
-            elif action == 'q':
-                break
+        if not final_boss:
+            while True:
+                print("There is the Poke-Hospital")
+                print("\nYou can:")
+                print("Enter Poke-Hospital - (E)")
+                print("Quit exploring - (Q)")
+                action = validate_string_input(
+                    "Enter action: ", ['e', 'q'], "Enter (E / Q) only!")
+                if action == 'e':
+                    pokemon = poke_hospital(pokemon)
+                elif action == 'q':
+                    break
+        if final_boss:
+            while True:
+                print("There is the Poke-Hospital")
+                print("A mysterious cave appeared")
+                print("\nYou can:")
+                print("Enter Poke-Hospital - (E)")
+                print("Enter mysterious cave - (C)")
+                print("Quit exploring - (Q)")
+                action = validate_string_input(
+                    "Enter action: ", ['e', 'c', 'q'], "Enter (E / C / Q) only!")
+                if action == 'e':
+                    pokemon = poke_hospital(pokemon)
+                elif action == 'c':
+                    pokemon, won = end_boss(pokemon)
+                elif action == 'q':
+                    break
+        
 
     else:
         level_increment = 0
@@ -311,13 +399,15 @@ def explore(area, pokemon, inventory, keys_found):
 
         found = random.choice(["chest", "encounter"])
         if found == "chest":
-            inventory, keys_found = chest(inventory, keys_found, chest_increment)
+            inventory, keys_found = chest(
+                inventory, keys_found, chest_increment)
 
         elif found == "encounter":
             name = random.choice(POKEMON[area])
             encounter = Pokemon(name, name, AREA_TO_TYPE[area], random.randint(
                 15, 30), random.choice([1, 1, 1, 1, 1, 2, 2, 3]) + level_increment, 0)
-            print(f"You encountered a level {encounter.level} {encounter.name}")
+            print(
+                f"You encountered a level {encounter.level} {encounter.name}")
             print("\nPokemon:")
             for i, v in enumerate(pokemon):
                 print(f"{i + 1}: {v.nickname}")
@@ -333,47 +423,80 @@ def explore(area, pokemon, inventory, keys_found):
                 pokemon, inventory = fight(
                     pokemon_choice, encounter, pokemon, inventory, True)
 
-    return pokemon, inventory, keys_found
+    return pokemon, inventory, keys_found, won
 
 
-def travel(area, keys_found, boss_beat):
-    pass
+def travel(area, keys_found, boss_beat, pokemon, inventory):
+    if area[:4] == "DEEP":
+        print("You can travel to: ")
+        print(f"{area} - (T)")
+        print("Stay here - (H)")
+        direction_choice = validate_string_input("\nEnter direction: ", ['t', 'h'], "Enter (T / H) only!")
+        if direction_choice == 't':
+            area = area[5:]
+
+    elif area == "TOWN":
+        print("You can travel to:")
+        print("North - A forest (N)")
+        print("East - A mountain (E)")
+        print("South - A ocean (S)")
+        print("West - An desert (W)")
+        print("Stay here - (H)")
+        direction_choice = validate_string_input(
+            "\nEnter direction: ", ['n', 'e', 's', 'w', 'h'], "Enter (N / E / S / W / H) only!")
+        area = {'n': "FOREST", 'e': "MOUNTAIN",
+                's': "OCEAN", 'w': "DESERT", 'h': "TOWN"}[direction_choice]
+
+    else:
+        print("You can travel to:")
+        print("Back to town - (T)")
+        print(f"Into the deep {area} - (D)")
+        print("Stay here - (H)")
+        direction_choice = validate_string_input("\nEnter direction: ", ['t', 'd', 'h'], "Enter (T / D / H) only!")
+        if direction_choice == 't':
+            area = "TOWN"
+        elif direction_choice == 'd':
+            if keys_found[area]:
+                if not boss_beat[area]:
+                    pokemon, boss_beat = boss(area, pokemon, boss_beat)
+                if boss_beat[area]:
+                    area = "DEEP " + area
+            else:
+                print(f"You haven't found the {area} key\nTry again later")
+
+    return area, pokemon, inventory, boss_beat
 
 
-pokemon = []
 inventory = {"pokeballs": 0, "treats": 0}
 keys_found = {"FOREST": False, "MOUNTAIN": False,
               "OCEAN": False, "DESERT": False}
 boss_beat = {"FOREST": False, "MOUNTAIN": False,
              "OCEAN": False, "DESERT": False}
+final_boss = False
 
-print("----------------- POKEMON -----------------")
-print("--------- A rip-off by ReubenIB13 ---------")
-print("\nYou awake in a town, dazzeled, a bright sun beating down above your head.")
-print("Getting your bearings you see around you, a forest, a mountain, an ocean and a desert.")
-print("Choose a dirction to go")
-print("North - A forest (N)")
-print("East - A mountain (E)")
-print("South - A ocean (S)")
-print("West - An desert (W)")
-direction_choice = validate_string_input(
-    "\nEnter direction: ", ['n', 'e', 's', 'w'], "Enter (N / E / S / W) only!")
-area = {'n': "FOREST", 'e': "MOUNTAIN",
-        's': "OCEAN", 'w': "DESERT"}[direction_choice]
-pokemon = first_pokemon(area, pokemon)
+area, pokemon = start()
 
 while True:
-    print(f"\nYou are at the {area}")
-    print("You can: ")
-    print("View pokemon - (V)")
-    print("Explore the area - (E)")
-    print("Travel - (T)")
-    action_choice = validate_string_input(
-        "\nEnter action: ", ['v', 'e', 't'], "Enter (V / E / T) only!")
-    if action_choice == 'v':
-        pokemon, inventory = view_pokemon(pokemon, inventory)
-    elif action_choice == 'e':
-        pokemon, inventory, keys_found = explore(
-            area, pokemon, inventory, keys_found)
-    elif action_choice == 't':
-        area = travel(area, keys_found, boss_beat)
+    if won:
+        print("\n\nTHANKS FOR PLAYING")
+        print("Congratulations you have beaten Pokemon")
+    else:
+        print(f"\nYou are at the {area}")
+        print("You can: ")
+        print("View pokemon - (V)")
+        print("Explore the area - (E)")
+        print("Travel - (T)")
+        action_choice = validate_string_input(
+            "\nEnter action: ", ['v', 'e', 't'], "Enter (V / E / T) only!")
+        if action_choice == 'v':
+            pokemon, inventory = view_pokemon(pokemon, inventory)
+        elif action_choice == 'e':
+            pokemon, inventory, keys_found, won = explore(
+                area, pokemon, inventory, keys_found, final_boss)
+        elif action_choice == 't':
+            area, pokemon, inventory, boss_beat = travel(
+                area, keys_found, boss_beat, pokemon, inventory)
+        final_boss = True
+        for i in boss_beat:
+            if not boss_beat[i]:
+                final_boss = False
