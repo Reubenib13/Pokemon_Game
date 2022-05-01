@@ -1,6 +1,5 @@
 import random
 import pickle
-from ast import literal_eval
 from time import sleep
 
 
@@ -16,7 +15,7 @@ class Pokemon:
 
 TYPES = {"EARTH": "WATER", "WATER": "FIRE", "FIRE": "GRASS", "GRASS": "EARTH"}
 AREA_TO_TYPE = {"MOUNTAIN": "EARTH", "OCEAN": "WATER",
-                 "DESERT": "FIRE", "FOREST": "GRASS"}
+                "DESERT": "FIRE", "FOREST": "GRASS"}
 TYPE_TO_ATTACK = {"FIRE": "Fire-Breath", "EARTH": "Rock-Smash",
                   "WATER": "Water-Squirt", "GRASS": "Leaf-Slice"}
 POKEMON = {"MOUNTAIN": ["Geodude", "Sandshrew", "Sandslash", "Diglet"],
@@ -63,15 +62,16 @@ def start():
     print("West - An desert (W)")
     direction_choice = validate_string_input(
         "\nEnter direction: ", ['n', 'e', 's', 'w'], "Enter (N / E / S / W) only!")
-    area = {'n': "FOREST", 'e': "MOUNTAIN", 's': "OCEAN", 'w': "DESERT"}[direction_choice]
+    area = {'n': "FOREST", 'e': "MOUNTAIN",
+            's': "OCEAN", 'w': "DESERT"}[direction_choice]
     pokemon = []
     pokemon = first_pokemon(area, pokemon)
 
     inventory = {"pokeballs": 0, "treats": 0}
     keys_found = {"FOREST": True, "MOUNTAIN": True,
-                "OCEAN": True, "DESERT": True}
+                  "OCEAN": True, "DESERT": True}
     boss_beat = {"FOREST": True, "MOUNTAIN": True,
-                "OCEAN": True, "DESERT": True}
+                 "OCEAN": True, "DESERT": True}
     final_boss = False
 
     return area, pokemon, inventory, keys_found, boss_beat, final_boss
@@ -227,7 +227,8 @@ def fight(pokemon_choice, encounter, pokemon, inventory, catch):
         if encounter.type == TYPES[pokemon[pokemon_choice].type]:
             increment = 3
             print("Attack was very effective")
-        damage = random.randint(8, (10 + increment) + 2 * pokemon[pokemon_choice].level)
+        damage = random.randint(8, (10 + increment) +
+                                2 * pokemon[pokemon_choice].level)
         print(f"Attack dealt {damage} damage")
         encounter.health -= damage
         if encounter.health < 1:
@@ -248,7 +249,8 @@ def fight(pokemon_choice, encounter, pokemon, inventory, catch):
         if action == 'y':
             if len(pokemon) > 4:
                 print("Cannot catch as you have a full team")
-                action = validate_string_input("Would you like to release a pokemon (Y / N): ", ['y', 'n'], "Enter(Y / N) only!")
+                action = validate_string_input(
+                    "Would you like to release a pokemon (Y / N): ", ['y', 'n'], "Enter(Y / N) only!")
                 if action == 'y':
                     print("\nPokemon:")
                     for i, v in enumerate(pokemon):
@@ -283,7 +285,8 @@ def boss(area, pokemon, boss_beat):
             break
 
         else:
-            encounter = Pokemon(POKEMON[area][i], POKEMON[area][i], AREA_TO_TYPE[area], 50, i + 2, 0)
+            encounter = Pokemon(
+                POKEMON[area][i], POKEMON[area][i], AREA_TO_TYPE[area], 50, i + 2, 0)
             print(f"\nThe {area} Boss used they're {encounter.name}")
             print("\nPokemon:")
             for i, v in enumerate(pokemon):
@@ -292,7 +295,7 @@ def boss(area, pokemon, boss_beat):
             for i in range(len(pokemon)):
                 accepted.append(i+1)
             pokemon_choice = validate_int_input(
-                    "Enter the number of the pokemon you wish to fight: ", accepted, "Enter only the number of one of your pokemon") - 1
+                "Enter the number of the pokemon you wish to fight: ", accepted, "Enter only the number of one of your pokemon") - 1
             while pokemon[pokemon_choice].health < 1:
                 print("That pokemon has fainted choose another")
                 pokemon_choice = validate_int_input(
@@ -300,7 +303,8 @@ def boss(area, pokemon, boss_beat):
             pokemon, _ = fight(pokemon_choice, encounter, pokemon, None, False)
 
     if boss_beat[area] and encounter.health <= 0:
-        print(f"Congratulations you beat the boss\nYou can now enter the DEEP {area}")
+        print(
+            f"Congratulations you beat the boss\nYou can now enter the DEEP {area}")
     return pokemon, boss_beat
 
 
@@ -321,7 +325,8 @@ def end_boss(pokemon):
         name = random.choice(POKEMON[area])
         encounter = Pokemon(name, name, AREA_TO_TYPE[area], 50, i + 5, 0)
 
-        print(f"The {area} Boss used they're level {encounter.level} {encounter.name}")
+        print(
+            f"The {area} Boss used they're level {encounter.level} {encounter.name}")
 
         print("\nPokemon:")
         for i, v in enumerate(pokemon):
@@ -332,7 +337,7 @@ def end_boss(pokemon):
             accepted.append(i+1)
 
         pokemon_choice = validate_int_input(
-                "Enter the number of the pokemon you wish to fight: ", accepted, f"Enter only the number of one of your pokemon") - 1
+            "Enter the number of the pokemon you wish to fight: ", accepted, f"Enter only the number of one of your pokemon") - 1
         while pokemon[pokemon_choice].health < 1:
             print("That pokemon has fainted choose another")
             pokemon_choice = validate_int_input(
@@ -430,9 +435,8 @@ def explore(area, pokemon, inventory, keys_found, final_boss):
                     pokemon = poke_hospital(pokemon)
                 elif action == 'c':
                     pokemon, won = end_boss(pokemon)
-                elif action == 'q'or won:
+                elif action == 'q' or won:
                     break
-        
 
     else:
         level_increment = 0
@@ -472,12 +476,12 @@ def explore(area, pokemon, inventory, keys_found, final_boss):
 
 def travel(area, keys_found, boss_beat, pokemon, inventory):
 
-
     if area[:4] == "DEEP":
         print("You can travel to: ")
         print(f"{area[5:]} - (T)")
         print("Stay here - (H)")
-        direction_choice = validate_string_input("\nEnter direction: ", ['t', 'h'], "Enter (T / H) only!")
+        direction_choice = validate_string_input(
+            "\nEnter direction: ", ['t', 'h'], "Enter (T / H) only!")
         if direction_choice == 't':
             area = area[5:]
 
@@ -498,7 +502,8 @@ def travel(area, keys_found, boss_beat, pokemon, inventory):
         print("Back to town - (T)")
         print(f"Into the deep {area} - (D)")
         print("Stay here - (H)")
-        direction_choice = validate_string_input("\nEnter direction: ", ['t', 'd', 'h'], "Enter (T / D / H) only!")
+        direction_choice = validate_string_input(
+            "\nEnter direction: ", ['t', 'd', 'h'], "Enter (T / D / H) only!")
         if direction_choice == 't':
             area = "TOWN"
         elif direction_choice == 'd':
@@ -513,7 +518,7 @@ def travel(area, keys_found, boss_beat, pokemon, inventory):
     return area, pokemon, inventory, boss_beat
 
 
-def save(area, pokemon, inventory, keys_found, boss_beat): 
+def save(area, pokemon, inventory, keys_found, boss_beat):
     account = input("Enter account you'd like to save under: ")
     with open(f"{account}area.txt", 'w') as f:
         f.write(area)
@@ -532,7 +537,8 @@ def save(area, pokemon, inventory, keys_found, boss_beat):
 
 
 while True:
-    action = validate_string_input("\nWould like to load save (L) or Start new game (N): ", ['l', 'n'], "Enter (L / N) only!")
+    action = validate_string_input("\nWould like to load save (L) or Start new game (N): ", [
+                                   'l', 'n'], "Enter (L / N) only!")
     if action == 'l':
         account = input("Enter account name you'd like to load: ")
         try:
@@ -544,7 +550,7 @@ while True:
 
             with open(f"{account}inventory.txt", "rb") as f:
                 inventory = pickle.loads(f.read())
-            
+
             with open(f"{account}keys_found.txt", "rb") as f:
                 keys_found = pickle.loads(f.read())
 
@@ -591,4 +597,3 @@ while True:
             save(area, pokemon, inventory, keys_found, boss_beat)
         elif action_choice == 'q':
             break
-        
