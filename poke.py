@@ -68,10 +68,10 @@ def start():
     pokemon = first_pokemon(area, pokemon)
 
     inventory = {"pokeballs": 0, "treats": 0}
-    keys_found = {"FOREST": True, "MOUNTAIN": True,
-                  "OCEAN": True, "DESERT": True}
-    boss_beat = {"FOREST": True, "MOUNTAIN": True,
-                 "OCEAN": True, "DESERT": True}
+    keys_found = {"FOREST": False, "MOUNTAIN": False,
+                  "OCEAN": False, "DESERT": False}
+    boss_beat = {"FOREST": False, "MOUNTAIN": False,
+                 "OCEAN": False, "DESERT": False}
     final_boss = False
 
     return area, pokemon, inventory, keys_found, boss_beat, final_boss
@@ -536,64 +536,69 @@ def save(area, pokemon, inventory, keys_found, boss_beat):
         pickle.dump(boss_beat, f)
 
 
-while True:
-    action = validate_string_input("\nWould like to load save (L) or Start new game (N): ", [
-                                   'l', 'n'], "Enter (L / N) only!")
-    if action == 'l':
-        account = input("Enter account name you'd like to load: ")
-        try:
-            with open(f"{account}area.txt", "r") as f:
-                area = f.read()
+def main():
+    while True:
+        action = validate_string_input("\nWould like to load save (L) or Start new game (N): ", [
+            'l', 'n'], "Enter (L / N) only!")
+        if action == 'l':
+            account = input("Enter account name you'd like to load: ")
+            try:
+                with open(f"{account}area.txt", "r") as f:
+                    area = f.read()
 
-            with open(f"{account}pokemon.txt", "rb") as f:
-                pokemon = pickle.loads(f.read())
+                with open(f"{account}pokemon.txt", "rb") as f:
+                    pokemon = pickle.loads(f.read())
 
-            with open(f"{account}inventory.txt", "rb") as f:
-                inventory = pickle.loads(f.read())
+                with open(f"{account}inventory.txt", "rb") as f:
+                    inventory = pickle.loads(f.read())
 
-            with open(f"{account}keys_found.txt", "rb") as f:
-                keys_found = pickle.loads(f.read())
+                with open(f"{account}keys_found.txt", "rb") as f:
+                    keys_found = pickle.loads(f.read())
 
-            with open(f"{account}boss_beat.txt", "rb") as f:
-                boss_beat = pickle.loads(f.read())
+                with open(f"{account}boss_beat.txt", "rb") as f:
+                    boss_beat = pickle.loads(f.read())
+                break
+
+            except FileNotFoundError:
+                print("Account not found")
+        elif action == 'n':
+            area, pokemon, inventory, keys_found, boss_beat, final_boss = start()
             break
 
-        except FileNotFoundError:
-            print("Account not found")
-    elif action == 'n':
-        area, pokemon, inventory, keys_found, boss_beat, final_boss = start()
-        break
+    won = False
+    while True:
+        final_boss = True
+        for i in boss_beat:
+            if not boss_beat[i]:
+                final_boss = False
 
-won = False
-while True:
-    final_boss = True
-    for i in boss_beat:
-        if not boss_beat[i]:
-            final_boss = False
-
-    if won:
-        print("\n\nTHANKS FOR PLAYING")
-        print("Congratulations you have beaten Pokemon")
-        break
-    else:
-        print(f"\nYou are at the {area}")
-        print("You can: ")
-        print("View Pokemon - (V)")
-        print("Explore the area - (E)")
-        print("Travel - (T)")
-        print("Save Game - (S)")
-        print("Quit Game - (Q)")
-        action_choice = validate_string_input(
-            "\nEnter action: ", ['v', 'e', 't', 's', 'q'], "Enter (V / E / T / S / Q) only!")
-        if action_choice == 'v':
-            pokemon, inventory = view_pokemon(pokemon, inventory)
-        elif action_choice == 'e':
-            pokemon, inventory, keys_found, won = explore(
-                area, pokemon, inventory, keys_found, final_boss)
-        elif action_choice == 't':
-            area, pokemon, inventory, boss_beat = travel(
-                area, keys_found, boss_beat, pokemon, inventory)
-        elif action_choice == 's':
-            save(area, pokemon, inventory, keys_found, boss_beat)
-        elif action_choice == 'q':
+        if won:
+            print("\n\nTHANKS FOR PLAYING")
+            print("Congratulations you have beaten Pokemon")
             break
+        else:
+            print(f"\nYou are at the {area}")
+            print("You can: ")
+            print("View Pokemon - (V)")
+            print("Explore the area - (E)")
+            print("Travel - (T)")
+            print("Save Game - (S)")
+            print("Quit Game - (Q)")
+            action_choice = validate_string_input(
+                "\nEnter action: ", ['v', 'e', 't', 's', 'q'], "Enter (V / E / T / S / Q) only!")
+            if action_choice == 'v':
+                pokemon, inventory = view_pokemon(pokemon, inventory)
+            elif action_choice == 'e':
+                pokemon, inventory, keys_found, won = explore(
+                    area, pokemon, inventory, keys_found, final_boss)
+            elif action_choice == 't':
+                area, pokemon, inventory, boss_beat = travel(
+                    area, keys_found, boss_beat, pokemon, inventory)
+            elif action_choice == 's':
+                save(area, pokemon, inventory, keys_found, boss_beat)
+            elif action_choice == 'q':
+                break
+
+
+if __name__ == "__main__":
+    main()
