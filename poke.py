@@ -136,9 +136,8 @@ def poke_hospital(pokemon):
             print("\nPokemon:")
             for i, v in enumerate(pokemon):
                 print(f"{i + 1}: {v.nickname}")
-            accepted = []
-            for i in range(len(pokemon)):
-                accepted.append(i+1)
+            accepted = [i+1 for i in range(len(pokemon))]
+
             pokemon_choice = validate_int_input(
                 "\nEnter the number of the pokemon you wish to revive: ", accepted, f"Enter only the number of one of your pokemon") - 1
             if pokemon[pokemon_choice].health <= 0:
@@ -255,9 +254,8 @@ def fight(pokemon_choice, encounter, pokemon, inventory, catch):
                     print("\nPokemon:")
                     for i, v in enumerate(pokemon):
                         print(f"{i + 1}: {v.nickname}")
-                    accepted = []
-                    for i in range(len(pokemon)):
-                        accepted.append(i+1)
+                    accepted = [i+1 for i in range(len(pokemon))]
+
                     pokemon_choice = validate_int_input(
                         "Enter the number of the pokemon you wish to release: ", accepted, f"Enter only the number of one of your pokemon") - 1
                     pokemon.pop(pokemon_choice)
@@ -291,9 +289,8 @@ def boss(area, pokemon, boss_beat):
             print("\nPokemon:")
             for i, v in enumerate(pokemon):
                 print(f"{i + 1}: {v.nickname}")
-            accepted = []
-            for i in range(len(pokemon)):
-                accepted.append(i+1)
+            accepted = [i+1 for i in range(len(pokemon))]
+
             pokemon_choice = validate_int_input(
                 "Enter the number of the pokemon you wish to fight: ", accepted, "Enter only the number of one of your pokemon") - 1
             while pokemon[pokemon_choice].health < 1:
@@ -332,9 +329,7 @@ def end_boss(pokemon):
         for i, v in enumerate(pokemon):
             print(f"{i + 1}: {v.nickname}")
 
-        accepted = []
-        for i in range(len(pokemon)):
-            accepted.append(i+1)
+        accepted = [i+1 for i in range(len(pokemon))]
 
         pokemon_choice = validate_int_input(
             "Enter the number of the pokemon you wish to fight: ", accepted, f"Enter only the number of one of your pokemon") - 1
@@ -358,9 +353,8 @@ def view_pokemon(pokemon, inventory):
         action_choice = validate_string_input(
             "\nEnter action: ", ['v', 'q'], "Enter (V / Q) only!")
         if action_choice == 'v':
-            accepted = []
-            for i in range(len(pokemon)):
-                accepted.append(i+1)
+            accepted = [i+1 for i in range(len(pokemon))]
+
             pokemon_choice = validate_int_input(
                 "Enter the number of the pokemon you wish to view: ", accepted, f"Enter only the number of one of your pokemon") - 1
             while True:
@@ -459,9 +453,8 @@ def explore(area, pokemon, inventory, keys_found, final_boss):
             print("\nPokemon:")
             for i, v in enumerate(pokemon):
                 print(f"{i + 1}: {v.nickname}")
-            accepted = []
-            for i in range(len(pokemon)):
-                accepted.append(i+1)
+
+            accepted = [i+1 for i in range(len(pokemon))]
             pokemon_choice = validate_int_input(
                 "\nEnter the number of the pokemon you wish to fight: ", accepted, f"Enter only the number of one of your pokemon") - 1
 
